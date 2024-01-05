@@ -1,0 +1,363 @@
+#include <Servo.h>
+
+#define PIN_SERVO1  8
+#define PIN_SERVO2  9
+#define PIN_SERVO3  10
+#define PIN_SERVO4  11
+
+#define TRIG_PIN 4
+#define ECHO_PIN 5
+#define TIME_OUT 5000
+
+Servo servo1;  //
+Servo servo2;  //
+Servo servo3;  //
+Servo servo4;  //
+
+
+
+int pos11 = 0; 
+int pos12 = 80; //Gốc
+int pos21 = 80;  //Gốc
+int pos22 = 140;
+int pos31 = 90;  
+int pos32 = 110; //Gốc
+int pos41 = 70;  //Gốc,Mở
+int pos42 = 90;  //Đóng
+int pos1 = pos12,pos2= pos21,pos3= pos32,pos4= pos41;
+
+float getDistance()
+{
+  long duration, distanceCm;
+   
+  digitalWrite(TRIG_PIN, LOW);
+  delayMicroseconds(2);
+  digitalWrite(TRIG_PIN, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(TRIG_PIN, LOW);
+  
+  duration = pulseIn(ECHO_PIN, HIGH, TIME_OUT);
+ 
+  // convert to distance
+  distanceCm = duration / 29.1 / 2;
+  
+  return distanceCm;
+}
+
+void setup() {
+  Serial.begin(9600);
+  pinMode(TRIG_PIN, OUTPUT);
+  pinMode(ECHO_PIN, INPUT);
+
+  
+  servo1.attach(PIN_SERVO1);
+  servo2.attach(PIN_SERVO2);
+  servo3.attach(PIN_SERVO3);
+  servo4.attach(PIN_SERVO4);
+
+  servo1.write(pos1);
+  servo2.write(pos2);
+  servo3.write(pos3);
+  servo4.write(pos4);
+  delay(1000);
+}
+void MoveGap(){
+  //hạ tay xuống
+  for (pos2 = 80; pos2 <= 140; pos2++) { 
+    servo2.write(pos2);
+    delay(15);
+    
+    
+  }
+  //kẹp vào
+  for (pos4 = pos41; pos4 <= pos42; pos4++) { 
+    servo4.write(pos4);
+    delay(15);
+    
+  }
+  //nâng tay lên
+  for (pos2 = pos22; pos2 >= pos21; pos2--) { 
+    servo2.write(pos2);
+    delay(15);
+    
+  }
+  // gập tay vào
+  for (pos3 = pos32; pos3 >= pos31; pos3--) { 
+    servo3.write(pos3);
+    delay(15);
+    
+  }
+  // xoay sang ngang
+  for (pos1 = pos12; pos1 >= pos11; pos1= pos1-2) { 
+    servo1.write(pos1);
+    delay(15);
+    
+
+  }
+  // mở tay ra
+  for (pos3 = pos31; pos3 <= pos32; pos3++) { 
+    servo3.write(pos3);
+    delay(15);
+    
+  }
+  //hạ tay xuống
+  for (pos2 = pos21; pos2 <= pos22; pos2++) { 
+    servo2.write(pos2);
+    delay(15);
+    
+  }
+  //Nhả ra
+  for (pos4 = pos42; pos4 >= pos41; pos4--) { 
+    servo4.write(pos4);
+    delay(15);
+    
+  }
+  // nâng tay lên
+  for (pos2 = pos22; pos2 >= pos21; pos2--) { 
+    servo2.write(pos2);
+    delay(15);
+    
+    
+  }
+  // xoay về trước
+  for (pos1 = pos11; pos1 <= pos12; pos1= pos1+2) { 
+    servo1.write(pos1);
+    delay(15);
+    
+    
+  }
+}
+void Hello(){
+  servo4.write(pos41);
+  delay(1500);
+  char a = Serial.read();
+  delay(150);
+  if (a=="P"){
+    return;
+  }
+  servo4.write(pos42);
+  delay(1500);
+  char b = Serial.read();
+  delay(150);
+  if (b=="P"){
+    return;
+  }
+  Hello();
+}
+void MoveHome(){
+  //CHuyển khớp 1 về Gốc
+  for(pos1=pos1;pos1>pos12;pos1--){
+    servo1.write(pos1);
+    delay(15);
+  }
+  for(pos1;pos1<pos12;pos1++){
+    servo1.write(pos1);
+    delay(15);
+  }
+  //Chhuyen Khop2 ve gốc
+  for(pos2;pos2>pos21;pos2--){
+    servo2.write(pos2);
+    delay(15);
+  }
+  for(pos2;pos2<pos21;pos2++){
+    servo2.write(pos2);
+    delay(15);
+  }
+  //Chuyển khớp 3 veef gốc
+  for(pos3;pos3>pos32;pos3--){
+    servo3.write(pos3);
+    delay(15);
+  }
+  for(pos3;pos3<pos32;pos3++){
+    servo3.write(pos3);
+    delay(15);
+  }
+  //Chueyern khớp 4 về gốc
+  for(pos4;pos4>pos41;pos4--){
+    servo4.write(pos4);
+    delay(15);
+  }
+  for(pos4;pos4<pos41;pos4++){
+    servo4.write(pos4);
+    delay(15);
+  }
+
+  
+}
+void stop(){
+  Serial.println("STOP");
+  servo1.write(pos1);
+  servo2.write(pos2);
+  servo3.write(pos3);
+  servo4.write(pos4);
+}
+void khop1tang(){
+  Serial.println(" khớp1 tăng");
+  if(pos1<179){
+  pos1=pos1+4;
+  servo1.write(pos1);
+  Serial.println(pos1);
+  delay(150);}}
+
+void khop1giam(){
+  Serial.println("khop1 giam");
+  if(pos1>3){
+    pos1=pos1-4;
+    servo1.write(pos1);
+    Serial.println(pos1);
+    delay(150);
+  }}
+void khop2tang(){
+  Serial.println("tăng");
+  if(pos2<179){
+    pos2=pos2+4;
+    servo2.write(pos2);
+    Serial.println(pos2);
+    delay(150);
+  }
+  }
+void khop2giam(){
+Serial.println("pos2");
+if(pos2>3){
+  pos2=pos2-4;
+  servo2.write(pos2);
+  Serial.println(pos2);
+  delay(150);
+}
+}
+void khop3tang(){
+  Serial.println("Khớp 3 tăng");
+  if(pos3<179){
+    pos3=pos3+4;
+    servo3.write(pos3);
+    Serial.println(pos3);
+    delay(150);
+  }
+}
+void khop3giam(){
+  Serial.println("khop3 giảm");
+  if(pos3>3){
+    pos3=pos3-4;
+    servo3.write(pos3);
+     Serial.println(pos3);
+    delay(150);
+  }
+}
+void khop4mo(){
+  Serial.println("Mở kep");
+  
+  pos4=pos41;
+  servo4.write(pos4);
+  Serial.println(pos4);
+  delay(150);
+  
+}
+void khop4dong(){
+  Serial.println("Đóng kẹp");
+  
+  pos4=pos42;
+  servo4.write(pos4);
+  Serial.println(pos4);
+  delay(150);
+  
+}
+void Automation(){
+  
+  long distance = getDistance();
+
+  if (distance <= 0){
+    Serial.println("Echo time out !!");
+  } else{   
+    Serial.print("Distance to nearest obstacle (cm): ");
+    Serial.println(distance);
+  }
+  
+  if (distance >= 9 && distance <= 10){
+    Serial.println("Gap Vat Ra!!!");
+    MoveGap();
+    
+    //Move0();
+    Serial.println("Hoan Thanh!!!");
+    delay(1000);
+  }
+  
+  delay(1000);
+  return Automation();
+}
+
+
+void loop() {
+//Serial.println(Serial.available());
+//Serial.write(Serial.available())
+
+  char a = Serial.read();
+  if(a>0){
+   Serial.write(a);
+   delay(15);
+  }
+  //if(a=='M'){
+    //servo4.write(70);
+  //  delay(150);
+    
+  //}
+  //
+  switch(a){
+    case 'F':
+    khop1tang();
+    break;
+    case 'G':
+    khop1giam();
+    break;
+    case 'H':
+    khop2tang();
+    break;
+    case 'I':
+    khop2giam();
+    break;
+    case 'K':
+    khop3tang();
+    break;
+    case 'L':
+    khop3giam();
+    break;
+    case 'M':
+    khop4mo();
+    break;
+    case 'N':
+    khop4dong();
+    break;
+    case 'O':
+    MoveHome();
+    while(true){
+      Automation();
+      char b = Serial.read();
+      if (b == 'P'){
+        break;
+        return;
+      }else{
+        continue;
+      }
+
+    }
+    
+    break;
+    case 'P':
+    stop();
+    break;
+    case 'Q':
+    MoveHome();
+    break;
+  }
+
+  
+
+
+}
+
+
+
+
+
+
+
+
